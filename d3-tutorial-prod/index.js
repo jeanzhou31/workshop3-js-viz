@@ -46,4 +46,27 @@ window.onload = function(){
             .exit()
             .attr("fill", "black");
 
+  d3.json("usa.json", function(error, usa) {
+      if (error) return console.error(error);
+
+      var scale = 800;  // around 800 should be fine
+      var center = [-100.371094, 38.708369];
+      var zoomOffset = 200;  // the amount the zoom center should deviate from the map's center
+
+      zoom.center(center.map(function(el){return el + zoomOffset;}));
+
+      var usaObject = usa.objects.layer1;
+      var topoUsaFeatures = topojson.feature(usa, usaObject);
+
+      var projectionLittle = d3.geo.mercator()
+                                  .scale(scale)
+                                  .center(center);
+
+      var path = d3.geo.path()
+                        .projection(projectionLittle);
+                        svgMap.append("path")
+                        .datum(topoUsaFeatures)
+                        .attr("d", path);
+      });
+
 };
